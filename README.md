@@ -5,6 +5,7 @@ A simple installer C# project template for making installers easily
 You can refer to a video tutorial here if you want to
 
 [Download Video](https://cdn.discordapp.com/attachments/883753960828198958/1139533769129328700/HowToUseInstallerRepack.mp4)
+
 [YouTube Link](https://youtu.be/y18NYiFvlFA)
 
 ### Changing the installer config
