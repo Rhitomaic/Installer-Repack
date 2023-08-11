@@ -4,7 +4,8 @@ A simple installer C# project template for making installers easily
 ## HOW TO USE?
 You can refer to a video tutorial here if you want to
 
-![](https://cdn.discordapp.com/attachments/883753960828198958/1139533769129328700/HowToUseInstallerRepack.mp4)
+![Download Video](https://cdn.discordapp.com/attachments/883753960828198958/1139533769129328700/HowToUseInstallerRepack.mp4)
+![YouTube Link](https://youtu.be/y18NYiFvlFA)
 
 ### Changing the installer config
 - Open up `Installer-Repack/MainForm.cs` and expand the Setup Config region, 
