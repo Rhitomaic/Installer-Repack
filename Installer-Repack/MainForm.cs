@@ -232,6 +232,13 @@ namespace Aseprite_Repack
 
         public Task InstallationTask()
         {
+        
+            try
+            {
+                if (!Directory.Exists(destinationPath))
+                    Directory.CreateDirectory(destinationPath);
+            }
+            catch (Exception e) { }
             using (var memoryStream = new MemoryStream(archiveBytes))
             {
                 try
