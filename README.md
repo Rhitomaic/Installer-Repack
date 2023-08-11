@@ -1,6 +1,10 @@
 ﻿# INSTALLER REPACK
 A "simple" installer C# project template for making installers
 
+## Requirements
+- .NET Framework 4.7.2
+- Visual Studio 2017 or higher
+- .NET desktop development Workload installed on Visual Studio
 ## HOW TO USE?
 You can refer to a video tutorial here if you want to
 
