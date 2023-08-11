@@ -1,5 +1,5 @@
 ﻿# INSTALLER REPACK
-A simple installer C# project template for making installers easily
+A "simple" installer C# project template for making installers
 
 ## HOW TO USE?
 You can refer to a video tutorial here if you want to
