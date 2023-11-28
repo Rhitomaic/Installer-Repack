@@ -17,33 +17,33 @@ namespace Uninstaller
         #region Setup Config
 
         // The original name of the program
-        public const string programName = "Godot";
+        public const string programName = "FurAffinity";
 
         // The company/creator name of the program
-        const string companyName = "Godot Foundation";
+        const string companyName = "Bunzhida";
 
         // The version of the program
-        const string appVersion = "3.5.2-stable";
+        const string appVersion = "1.2.0-alpha";
 
         // The link for the program
-        const string programLink = "https://godotengine.org";
+        const string programLink = "https://github.com/ReDarkTechnology/FurAffinity-Desktop";
 
         // The window title of the setup
-        const string installerName = "Godot Setup";
+        const string installerName = "FurAffinity Setup";
 
         // This is what will be shown default on installation path
-        const string defaultDestinationPath = "C:\\Program Files (x86)\\Godot";
+        const string defaultDestinationPath = "C:\\Program Files (x86)\\FurAffinity";
 
         // This path is relative to the destination path
-        const string exePath = "Godot_v3.5.2-stable_win64.exe";
+        const string exePath = "FurAffinity.exe";
 
         // A special GUID specific for the program (you can use Guid.NewGuid() too)
-        const string programGUID = "{5c023135-e620-402b-b2ae-17c670e5f843}";
+        const string programGUID = "{68589478-A018-450D-AEDB-815BEDA0ADAF}";
 
         // Format: { <Extension>, <FileDescription> }
         static Dictionary<string, string> associations = new Dictionary<string, string>()
         {
-            { ".godot", "Godot Project File" }
+            { ".fafaves", "FurAffinity favorites file" }
         };
 
         #endregion

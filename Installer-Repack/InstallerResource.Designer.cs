@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace Aseprite_Repack {
+namespace Installer_Repack {
     using System;
     
     
@@ -39,7 +39,7 @@ namespace Aseprite_Repack {
         internal static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Aseprite_Repack.InstallerResource", typeof(InstallerResource).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Installer_Repack.InstallerResource", typeof(InstallerResource).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;

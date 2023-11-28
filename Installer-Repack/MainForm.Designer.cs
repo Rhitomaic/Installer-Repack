@@ -1,4 +1,4 @@
-﻿namespace Aseprite_Repack
+﻿namespace Installer_Repack
 {
     partial class MainForm
     {
@@ -93,7 +93,7 @@
             // wizardPicture
             // 
             this.wizardPicture.Anchor = System.Windows.Forms.AnchorStyles.Left;
-            this.wizardPicture.Image = global::Aseprite_Repack.InstallerResource.Wizard;
+            this.wizardPicture.Image = global::Installer_Repack.InstallerResource.Wizard;
             this.wizardPicture.Location = new System.Drawing.Point(0, 1);
             this.wizardPicture.Name = "wizardPicture";
             this.wizardPicture.Size = new System.Drawing.Size(164, 314);
@@ -294,7 +294,7 @@
             // installerHeaderIcon
             // 
             this.installerHeaderIcon.Anchor = System.Windows.Forms.AnchorStyles.Right;
-            this.installerHeaderIcon.Image = global::Aseprite_Repack.InstallerResource.Header;
+            this.installerHeaderIcon.Image = global::Installer_Repack.InstallerResource.Header;
             this.installerHeaderIcon.Location = new System.Drawing.Point(433, 0);
             this.installerHeaderIcon.Name = "installerHeaderIcon";
             this.installerHeaderIcon.Size = new System.Drawing.Size(53, 52);
@@ -431,7 +431,7 @@
             // pathHeaderIcon
             // 
             this.pathHeaderIcon.Anchor = System.Windows.Forms.AnchorStyles.Right;
-            this.pathHeaderIcon.Image = global::Aseprite_Repack.InstallerResource.Header;
+            this.pathHeaderIcon.Image = global::Installer_Repack.InstallerResource.Header;
             this.pathHeaderIcon.Location = new System.Drawing.Point(433, 0);
             this.pathHeaderIcon.Name = "pathHeaderIcon";
             this.pathHeaderIcon.Size = new System.Drawing.Size(53, 52);
@@ -515,7 +515,7 @@
             // installationIcon
             // 
             this.installationIcon.Anchor = System.Windows.Forms.AnchorStyles.Right;
-            this.installationIcon.Image = global::Aseprite_Repack.InstallerResource.Header;
+            this.installationIcon.Image = global::Installer_Repack.InstallerResource.Header;
             this.installationIcon.Location = new System.Drawing.Point(433, 0);
             this.installationIcon.Name = "installationIcon";
             this.installationIcon.Size = new System.Drawing.Size(53, 52);
@@ -571,7 +571,7 @@
             // finishImage
             // 
             this.finishImage.Anchor = System.Windows.Forms.AnchorStyles.Left;
-            this.finishImage.Image = global::Aseprite_Repack.InstallerResource.Wizard;
+            this.finishImage.Image = global::Installer_Repack.InstallerResource.Wizard;
             this.finishImage.Location = new System.Drawing.Point(0, 1);
             this.finishImage.Name = "finishImage";
             this.finishImage.Size = new System.Drawing.Size(164, 314);
