@@ -1,0 +1,32 @@
+{
+  "ProgramName": "Installer Repacker",
+  "CompanyName": "ReDark Technology",
+  "Version": "0.0.1",
+  "Link": "https://github.com/ReDarkTechnology/Installer-Repack/",
+  "DefaultDirectory": "%LocalAppData%\\Installer-Repacker",
+  "ExecutablePath": "Creator.exe",
+  "Guid": "{4aa3668e-103c-4c29-af8e-de83b5c98074}",
+  "InstallerName": "InstallerRepacker",
+  "InstallerIcon": "",
+  "Items": [
+    {
+      "RelativePath": "bin\\Release\\Creator.exe",
+      "IsFolder": false
+    },
+    {
+      "RelativePath": "bin\\Release\\Newtonsoft.Json.dll",
+      "IsFolder": false
+    },
+    {
+      "RelativePath": "bin\\Release\\OriginalProject",
+      "IsFolder": true
+    }
+  ],
+  "UrlAssociations": [],
+  "FileAssociations": [
+    {
+      "Extension": ".irp",
+      "Description": "Installer Repack Project"
+    }
+  ]
+}
