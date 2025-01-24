@@ -47,7 +47,29 @@ namespace Creator
             if (saveBuildDialog.ShowDialog() == DialogResult.OK)
             {
                 CopyDirectory("OriginalProject", "Cache/Project", true);
-                Build();
+
+                long size = 0;
+                foreach (var item in Project.Items)
+                {
+                    if (item.IsFolder)
+                        size += DirSize(new DirectoryInfo(Path.Combine(CurrentDirectory, item.RelativePath)));
+                    else
+                        size += new FileInfo(Path.Combine(CurrentDirectory, item.RelativePath)).Length;
+                }
+
+                var configData = GenerateConfigDataFromProject((int)size);
+
+                var content = File.ReadAllText("Cache/Project/Installer-Repack/MainForm.cs");
+                content = content.Replace("{CONFIG_DATA}", configData);
+                File.WriteAllText("Cache/Project/Installer-Repack/MainForm.cs", content);
+
+                content = File.ReadAllText("Cache/Project/Uninstaller/MainForm.cs");
+                content = content.Replace("{CONFIG_DATA}", configData);
+                File.WriteAllText("Cache/Project/Uninstaller/MainForm.cs", content);
+
+                BuildUninstaller("Cache/Project/Installer-Repack/Resources/Uninstaller.exe");
+                Build(saveBuildDialog.FileName);
+
                 Directory.Delete("Cache/Project", true);
             }
         }
@@ -84,9 +106,9 @@ namespace Creator
             }
         }
 
-        static void Build()
+        public void BuildUninstaller(string outputName)
         {
-            string csprojPath = "Cache/Project/InstallerRepack.csproj";
+            string csprojPath = "Cache/Project/Uninstaller/Uninstaller.csproj";
 
             if (!File.Exists(csprojPath))
             {
@@ -113,7 +135,7 @@ namespace Creator
             CompilerParameters parameters = new CompilerParameters
             {
                 GenerateExecutable = true,
-                OutputAssembly = "OutputAssemblyName.exe", // Replace with your output name
+                OutputAssembly = outputName, // Replace with your output name
                 IncludeDebugInformation = true,
             };
 
@@ -139,26 +161,162 @@ namespace Creator
                 }
             }
 
-            // Compile the code
-            CodeDomProvider provider = CodeDomProvider.CreateProvider("CSharp");
+            Console.WriteLine("Uninstaller Sources: " + sourceCode.Count);
+
+            AppDomain compileDomain = AppDomain.CreateDomain("CompileDomain");
+
+            try
+            {
+                // Create an instance of the compiler worker in the new domain
+                var worker = (CompilerWorker)compileDomain.CreateInstanceAndUnwrap(
+                    Assembly.GetExecutingAssembly().FullName,
+                    typeof(CompilerWorker).FullName);
+
+                // Compile the assembly in the worker
+                bool success = worker.CompileAssembly(parameters, sourceCode.ToArray());
+                if (success)
+                {
+                    Console.WriteLine("Compilation succeeded in another domain.");
+                }
+                else
+                {
+                    Console.WriteLine("Compilation failed in another domain.");
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error: {ex.Message}");
+            }
+            finally
+            {
+                // Unload the compile domain
+                AppDomain.Unload(compileDomain);
+                Console.WriteLine("Compile domain unloaded.");
+            }
+        }
+
+        public void Build(string outputName)
+        {
+            long size = 0;
+            foreach (var item in Project.Items)
+            {
+                if (item.IsFolder)
+                    size += DirSize(new DirectoryInfo(Path.Combine(CurrentDirectory, item.RelativePath)));
+                else
+                    size += new FileInfo(Path.Combine(CurrentDirectory, item.RelativePath)).Length;
+            }
+
+            string csprojPath = "Cache/Project/Installer-Repack/Installer-Repack.csproj";
+
+            if (!File.Exists(csprojPath))
+            {
+                Console.WriteLine("Project file not found.");
+                return;
+            }
+
+            // Read and parse the .csproj file
+            XDocument csproj = XDocument.Load(csprojPath);
+
+            // Extract source files
+            IEnumerable<string> sourceFiles = csproj
+                .Descendants("Compile")
+                .Select(e => e.Attribute("Include")?.Value)
+                .Where(f => f != null);
+
+            // Extract references
+            IEnumerable<string> references = csproj
+                .Descendants("Reference")
+                .Select(e => e.Attribute("Include")?.Value)
+                .Where(r => r != null);
+
+            // Setup compiler parameters
+            CompilerParameters parameters = new CompilerParameters
+            {
+                GenerateExecutable = true,
+                OutputAssembly = outputName, // Replace with your output name
+                IncludeDebugInformation = true,
+            };
+
+            // Add referenced assemblies
+            foreach (string reference in references)
+            {
+                // Resolve reference paths if needed
+                string resolvedPath = ResolveReference(reference);
+                if (resolvedPath != null)
+                {
+                    parameters.ReferencedAssemblies.Add(resolvedPath);
+                }
+            }
+
+            // Read source code from files
+            List<string> sourceCode = new List<string>();
+            foreach (string file in sourceFiles)
+            {
+                string filePath = Path.Combine(Path.GetDirectoryName(csprojPath) ?? string.Empty, file);
+                if (File.Exists(filePath))
+                {
+                    sourceCode.Add(File.ReadAllText(filePath));
+                }
+            }
+
+            Console.WriteLine("Installer Sources: " + sourceCode.Count);
+            AppDomain compileDomain = AppDomain.CreateDomain("CompileDomain");
+
+            try
+            {
+                // Create an instance of the compiler worker in the new domain
+                var worker = (CompilerWorker)compileDomain.CreateInstanceAndUnwrap(
+                    Assembly.GetExecutingAssembly().FullName,
+                    typeof(CompilerWorker).FullName);
+
+                // Compile the assembly in the worker
+                bool success = worker.CompileAssembly(parameters, sourceCode.ToArray());
+                if (success)
+                {
+                    Console.WriteLine("Compilation succeeded in another domain.");
+                }
+                else
+                {
+                    Console.WriteLine("Compilation failed in another domain.");
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error: {ex.Message}");
+            }
+            finally
+            {
+                // Unload the compile domain
+                AppDomain.Unload(compileDomain);
+                Console.WriteLine("Compile domain unloaded.");
+            }
+        }
+
+        public static long DirSize(DirectoryInfo d)
+        {
+            long size = 0;
+            // Add file sizes.
+            FileInfo[] fis = d.GetFiles();
+            foreach (FileInfo fi in fis)
+            {
+                size += fi.Length;
+            }
+            // Add subdirectory sizes.
+            DirectoryInfo[] dis = d.GetDirectories();
+            foreach (DirectoryInfo di in dis)
+            {
+                size += DirSize(di);
+            }
+            return size;
         }
 
         public class CompilerWorker : MarshalByRefObject
         {
             public bool CompileAssembly(CompilerParameters parameters, string[] sourceCode)
             {
-                CompilerParameters parameters = new CompilerParameters
-                {
-                    GenerateExecutable = false,
-                    OutputAssembly = outputAssemblyPath,
-                    GenerateInMemory = false
-                };
-
-                parameters.ReferencedAssemblies.Add("System.dll");
-
                 using (CodeDomProvider provider = CodeDomProvider.CreateProvider("CSharp"))
                 {
-                    CompilerResults result = provider.CompileAssemblyFromSource(parameters, sourceCode.ToArray());
+                    CompilerResults result = provider.CompileAssemblyFromSource(parameters, sourceCode);
 
                     if (result.Errors.HasErrors)
                     {
@@ -167,10 +325,12 @@ namespace Creator
                         {
                             Console.WriteLine($"  {error}");
                         }
+                        return false;
                     }
                     else
                     {
                         Console.WriteLine("Compilation succeeded!");
+                        return true;
                     }
                 }
             }
@@ -206,6 +366,15 @@ namespace Creator
 
             builder.AppendLine("\t\tconst long archiveSize = " + archiveSize + ";");
             return builder.ToString();
+        }
+
+        public string ResolveDirectoryPath(string path)
+        {
+            path = path.Replace("%LocalAppData%", Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData));
+            path = path.Replace("%AppData%", Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData));
+            path = path.Replace("%ProgramFiles%", Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles));
+            path = path.Replace("%ProgramFilesX86%", Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86));
+            return path;
         }
 
         private void saveBtn_Click(object sender, EventArgs e)

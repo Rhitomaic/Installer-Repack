@@ -15,37 +15,7 @@ namespace Uninstaller
     public partial class MainForm : Form
     {
         #region Setup Config
-
-        // The original name of the program
-        public const string programName = "Godot";
-
-        // The company/creator name of the program
-        const string companyName = "Godot Foundation";
-
-        // The version of the program
-        const string appVersion = "3.5.2-stable";
-
-        // The link for the program
-        const string programLink = "https://godotengine.org";
-
-        // The window title of the setup
-        const string installerName = "Godot Setup";
-
-        // This is what will be shown default on installation path
-        const string defaultDestinationPath = "C:\\Program Files (x86)\\Godot";
-
-        // This path is relative to the destination path
-        const string exePath = "Godot_v3.5.2-stable_win64.exe";
-
-        // A special GUID specific for the program (you can use Guid.NewGuid() too)
-        const string programGUID = "{5c023135-e620-402b-b2ae-17c670e5f843}";
-
-        // Format: { <Extension>, <FileDescription> }
-        static Dictionary<string, string> associations = new Dictionary<string, string>()
-        {
-            { ".godot", "Godot Project File" }
-        };
-
+{CONFIG_DATA}
         #endregion
 
         #region Variables

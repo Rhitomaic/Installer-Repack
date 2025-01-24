@@ -16,40 +16,7 @@ namespace Aseprite_Repack
     public partial class MainForm : Form
     {
         #region Setup Config
-
-        // The original name of the program
-        public const string programName = "{PROGRAM_NAME}";
-
-        // The company/creator name of the program
-        const string companyName = "{COMPANY_NAME}";
-
-        // The version of the program
-        const string appVersion = "{PROGRAM_VERSION}";
-
-        // The link for the program
-        const string programLink = "{PROGRAM_LINK}";
-
-        // The window title of the setup
-        const string installerName = "{INSTALLER_NAME}";
-
-        // This is what will be shown default on installation path
-        const string defaultDestinationPath = "{DEFAULT_INSTALL_DIRECTORY}";
-
-        // This path is relative to the destination path
-        const string exePath = "{EXECUTABLE_PATH}";
-
-        // A special GUID specific for the program (you can use Guid.NewGuid() too)
-        const string programGUID = "{PROGRAM_GUID}";
-
-        // Format: { <Extension>, <FileDescription> }
-        static Dictionary<string, string> associations = new Dictionary<string, string>()
-        {
-            { ".godot", "Godot Project File" }
-        };
-
-        // Manually put the extracted size of your program (in bytes)
-        const long archiveSize = 76582340;
-
+{CONFIG_DATA}
         // Put your archive on InstallerResource.resx
         static byte[] archiveBytes = InstallerResource.InstallationArchive;
 
