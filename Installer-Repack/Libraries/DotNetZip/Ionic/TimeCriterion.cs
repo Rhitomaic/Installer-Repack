@@ -44,7 +44,6 @@ namespace Ionic
 
 		private bool _Evaluate(DateTime x)
 		{
-			bool flag = false;
 			switch (Operator)
 			{
 			case ComparisonOperator.GreaterThanOrEqualTo:

@@ -438,7 +438,6 @@ namespace Microsoft.WindowsAPICodePack.Dialogs
 		private static TaskDialogResult ConstructDialogResult(NativeTaskDialog native)
 		{
 			Debug.Assert(native.ShowState == DialogShowState.Closed, "dialog result being constructed for unshown dialog.");
-			TaskDialogResult taskDialogResult = TaskDialogResult.Cancel;
 			TaskDialogStandardButtons taskDialogStandardButtons = MapButtonIdToStandardButton(native.SelectedButtonId);
 			if (taskDialogStandardButtons == TaskDialogStandardButtons.None)
 			{

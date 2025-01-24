@@ -6,6 +6,7 @@ namespace Microsoft.WindowsAPICodePack.Shell
 {
 	internal struct FolderProperties
 	{
+#pragma warning disable 0649
 		internal string name;
 
 		internal FolderCategory category;
@@ -51,5 +52,6 @@ namespace Microsoft.WindowsAPICodePack.Shell
 		internal RedirectionCapability redirection;
 
 		internal string security;
-	}
+#pragma warning restore 0649
+    }
 }

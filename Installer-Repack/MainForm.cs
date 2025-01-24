@@ -26,6 +26,8 @@ namespace Aseprite_Repack
 
         #endregion
 
+
+
         #region Variables
         InstallSection section = InstallSection.Home;
         Panel[] sections;
@@ -33,6 +35,7 @@ namespace Aseprite_Repack
         string destinationPath;
         List<string> installedPaths = new List<string>();
         List<AssociationCheckBox> assocBoxes = new List<AssociationCheckBox>();
+        List<UrlAssocCheckBox> urlAssocBoxes = new List<UrlAssocCheckBox>();
 
         long freeSpace = 0;
         bool passDialog;
@@ -81,7 +84,7 @@ namespace Aseprite_Repack
             requiredSpaceLabel.Text = "Required free space: " + BytesToString(archiveSize);
 
             // Options Associations
-            foreach(var assoc in associations)
+            foreach (var assoc in associations)
             {
                 var box = new AssociationCheckBox();
                 box.Prepare(assoc.Key, programName, assoc.Value);
@@ -90,6 +93,20 @@ namespace Aseprite_Repack
                 associationPanel.Controls.Add(box);
                 assocBoxes.Add(box);
             }
+
+            // Url Options Associations
+            foreach (var url in urlProtocols)
+            {
+                var box = new UrlAssocCheckBox();
+                box.Prepare(url, programName);
+                box.Checked = true;
+                box.Size = new System.Drawing.Size(400, 17);
+                associationPanel.Controls.Add(box);
+                urlAssocBoxes.Add(box);
+            }
+
+            if (associations.Count < 1 && urlProtocols.Length < 1)
+                associationPanel.Visible = false;
 
             destinationPathBox.Text = defaultDestinationPath;
         }
@@ -127,7 +144,7 @@ namespace Aseprite_Repack
             if (!string.IsNullOrEmpty(destinationPath))
                 RefreshFreeSpace();
         }
-        
+
         private void LeftestButton_Click(object sender, EventArgs e)
         {
             if (section == InstallSection.Path)
@@ -153,7 +170,7 @@ namespace Aseprite_Repack
             else if (section == InstallSection.Finish)
             {
                 passDialog = true;
-                if(finishLaunchBox.Checked)
+                if (finishLaunchBox.Checked)
                 {
                     string executablePath = Path.Combine(destinationPath, exePath);
                     Process.Start(executablePath);
@@ -199,13 +216,13 @@ namespace Aseprite_Repack
 
         public Task InstallationTask()
         {
-        
+
             try
             {
                 if (!Directory.Exists(destinationPath))
                     Directory.CreateDirectory(destinationPath);
             }
-            catch (Exception e) { }
+            catch (Exception) { }
             using (var memoryStream = new MemoryStream(archiveBytes))
             {
                 try
@@ -242,13 +259,21 @@ namespace Aseprite_Repack
                             }
                         }
                     }
+
                     Invoke(new Action(() =>
                     {
                         string executablePath = Path.Combine(destinationPath, exePath);
                         if (desktopIconBox.Checked) CreateDesktopShortcut();
                         if (startMenuIconBox.Checked) CreateStartMenuShortcut();
-                        foreach(var box in assocBoxes)
+
+                        foreach (var box in assocBoxes)
                             box.TryAssignAssoc(executablePath);
+                        foreach (var box in urlAssocBoxes)
+                        {
+                            if (box.Checked)
+                                CreateUrlProtocol(box.protocol);
+                        }
+
                         CreateUninstaller();
                         System.IO.File.WriteAllText(Path.Combine(destinationPath, "Uninstall.inf"), string.Join("\n", installedPaths));
                         System.IO.File.WriteAllBytes(Path.Combine(destinationPath, "Uninstall.exe"), InstallerResource.Uninstaller);
@@ -269,7 +294,7 @@ namespace Aseprite_Repack
         private void CreateDesktopShortcut()
         {
             string filePath = Path.Combine(destinationPath, exePath);
-            object shDesktop = (object)"Desktop";
+            object shDesktop = "Desktop";
             WshShell shell = new WshShell();
             string shortcutAddress = (string)shell.SpecialFolders.Item(ref shDesktop) + $"\\{programName}.lnk";
             IWshShortcut shortcut = (IWshShortcut)shell.CreateShortcut(shortcutAddress);
@@ -284,8 +309,8 @@ namespace Aseprite_Repack
             string pathToExe = Path.Combine(destinationPath, exePath);
             string roamingStartMenuPath = Environment.GetFolderPath(Environment.SpecialFolder.StartMenu);
             string commonStartMenuPath = Environment.GetFolderPath(Environment.SpecialFolder.CommonStartMenu);
-            string appStartMenuPath = Path.Combine(roamingStartMenuPath, "Programs", companyName);
-            string appStartMenuPath2 = Path.Combine(commonStartMenuPath, "Programs", companyName);
+            string appStartMenuPath = Path.Combine(roamingStartMenuPath, "Programs", programName);
+            string appStartMenuPath2 = Path.Combine(commonStartMenuPath, "Programs", programName);
 
             if (!Directory.Exists(appStartMenuPath))
                 Directory.CreateDirectory(appStartMenuPath);
@@ -314,8 +339,8 @@ namespace Aseprite_Repack
             string pathToExe = Path.Combine(destinationPath, "Uninstall.exe");
             string roamingStartMenuPath = Environment.GetFolderPath(Environment.SpecialFolder.StartMenu);
             string commonStartMenuPath = Environment.GetFolderPath(Environment.SpecialFolder.CommonStartMenu);
-            string appStartMenuPath = Path.Combine(roamingStartMenuPath, "Programs", companyName);
-            string appStartMenuPath2 = Path.Combine(commonStartMenuPath, "Programs", companyName);
+            string appStartMenuPath = Path.Combine(roamingStartMenuPath, "Programs", programName);
+            string appStartMenuPath2 = Path.Combine(commonStartMenuPath, "Programs", programName);
 
             if (!Directory.Exists(appStartMenuPath))
                 Directory.CreateDirectory(appStartMenuPath);
@@ -382,7 +407,7 @@ namespace Aseprite_Repack
                         }
                     }
                 }
-                catch (Exception ex)
+                catch (Exception)
                 {
                     /*throw new Exception(
                         "An error occurred writing uninstall information to the registry. The service is fully installed but can only be uninstalled manually through the command line.",
@@ -390,6 +415,37 @@ namespace Aseprite_Repack
                 }
             }
         }
+
+        private void CreateUrlProtocol(string customProtocol)
+        {
+            try
+            {
+                RegistryKey key = Registry.ClassesRoot.OpenSubKey(customProtocol);
+
+                if (key == null)
+                {
+                    key = Registry.ClassesRoot.CreateSubKey(customProtocol);
+
+                    key.SetValue(string.Empty, "URL:" + customProtocol);
+                    key.SetValue("URL Protocol", string.Empty);
+                }
+
+                var subKey = key.OpenSubKey(@"shell\open\command");
+                if (subKey == null)
+                {
+                    subKey = key.CreateSubKey(@"shell\open\command");
+                    subKey.SetValue(string.Empty, $"\"{Path.Combine(destinationPath, exePath)}\" %1");
+                }
+
+                subKey.Close();
+                key.Close();
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+            }
+        }
+
 
         public void EndInstallation(string title = null, string desc = null, bool failed = false)
         {
@@ -553,8 +609,21 @@ namespace Aseprite_Repack
 
         public void TryAssignAssoc(string exePath)
         {
-            if(Checked)
+            if (Checked)
                 FileAssociations.SetAssociation(extension, progName, progDescription, exePath);
+        }
+    }
+
+    public class UrlAssocCheckBox : CheckBox
+    {
+        public string protocol;
+        public string progName;
+
+        public void Prepare(string ext, string name)
+        {
+            protocol = ext;
+            progName = name;
+            Text = $"Register {ext}:// url with {name}";
         }
     }
     #endregion

@@ -213,7 +213,7 @@
             this.fileTypeLabel.Name = "fileTypeLabel";
             this.fileTypeLabel.Size = new System.Drawing.Size(179, 17);
             this.fileTypeLabel.TabIndex = 7;
-            this.fileTypeLabel.Text = "File type association:";
+            this.fileTypeLabel.Text = "Associations:";
             // 
             // startMenuIconBox
             // 
@@ -586,13 +586,14 @@
             this.BackColor = System.Drawing.Color.White;
             this.ClientSize = new System.Drawing.Size(484, 361);
             this.Controls.Add(this.bottomBar);
+            this.Controls.Add(this.optionsPanel);
+            this.Controls.Add(this.finishPanel);
             this.Controls.Add(this.welcomePanel);
             this.Controls.Add(this.pathPanel);
             this.Controls.Add(this.installationPanel);
-            this.Controls.Add(this.optionsPanel);
-            this.Controls.Add(this.finishPanel);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.Name = "MainForm";
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Setup";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.MainForm_FormClosing);
             ((System.ComponentModel.ISupportInitialize)(this.wizardPicture)).EndInit();

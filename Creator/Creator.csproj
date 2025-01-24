@@ -5,7 +5,7 @@
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{983C7B73-03D2-4FB8-BB8E-A98945C27225}</ProjectGuid>
-    <OutputType>Exe</OutputType>
+    <OutputType>WinExe</OutputType>
     <RootNamespace>Creator</RootNamespace>
     <AssemblyName>Creator</AssemblyName>
     <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
@@ -72,6 +72,12 @@
     <Reference Include="WindowsFormsIntegration" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="LoadingForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="LoadingForm.Designer.cs">
+      <DependentUpon>LoadingForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="MainForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -559,6 +565,9 @@
     <EmbeddedResource Include="Libraries\DotNetZip\Ionic.Zip.WinFormsSelfExtractorStub.resx" />
     <EmbeddedResource Include="Libraries\Microsoft.WindowsAPICodePack.Shell\Microsoft.WindowsAPICodePack.Shell.Resources.LocalizedMessages.resx" />
     <EmbeddedResource Include="Libraries\Microsoft.WindowsAPICodePack\Microsoft.WindowsAPICodePack.Resources.LocalizedMessages.resx" />
+    <EmbeddedResource Include="LoadingForm.resx">
+      <DependentUpon>LoadingForm.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="MainForm.resx">
       <DependentUpon>MainForm.cs</DependentUpon>
     </EmbeddedResource>

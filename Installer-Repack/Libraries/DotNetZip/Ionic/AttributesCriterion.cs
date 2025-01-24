@@ -109,7 +109,6 @@ namespace Ionic
 
 		private bool _EvaluateOne(FileAttributes fileAttrs, FileAttributes criterionAttrs)
 		{
-			bool flag = false;
 			if ((_Attributes & criterionAttrs) == criterionAttrs)
 			{
 				return (fileAttrs & criterionAttrs) == criterionAttrs;

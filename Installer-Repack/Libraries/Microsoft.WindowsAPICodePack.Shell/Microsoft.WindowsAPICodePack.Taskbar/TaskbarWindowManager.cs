@@ -307,7 +307,6 @@ namespace Microsoft.WindowsAPICodePack.Taskbar
 					}
 					return true;
 				}
-				bool flag = 1 == 0;
 				TabbedThumbnailNativeMethods.SetPeekBitmap(taskbarWindow.WindowToTellTaskbarAbout, intPtr, taskbarWindow.TabbedThumbnail.DisplayFrameAroundBitmap);
 				if (taskbarWindow.TabbedThumbnail.CurrentHBitmap == IntPtr.Zero)
 				{
@@ -515,7 +514,6 @@ namespace Microsoft.WindowsAPICodePack.Taskbar
 		private static void thumbnailPreview_TitleChanged(object sender, EventArgs e)
 		{
 			TabbedThumbnail tabbedThumbnail = sender as TabbedThumbnail;
-			TaskbarWindow taskbarWindow = null;
 			((!(tabbedThumbnail.WindowHandle == IntPtr.Zero)) ? GetTaskbarWindow(tabbedThumbnail.WindowHandle, TaskbarProxyWindowType.TabbedThumbnail) : GetTaskbarWindow(tabbedThumbnail.WindowsControl, TaskbarProxyWindowType.TabbedThumbnail))?.SetTitle(tabbedThumbnail.Title);
 		}
 	}

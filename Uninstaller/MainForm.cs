@@ -102,6 +102,11 @@ namespace Uninstaller
                     if (DeleteAssociation(assoc.Key, programName))
                         SHChangeNotify(0x8000000, 0x1000, IntPtr.Zero, IntPtr.Zero);
                 }
+                
+                foreach (var assoc in urlProtocols)
+                {
+                	DeleteUrlProtocol(assoc);
+                }
 
                 MessageBox.Show($"{programName} has been uninstalled from your computer!");
             }
@@ -159,6 +164,11 @@ namespace Uninstaller
             madeChanges |= RemoveKey(@"Software\Classes\" + progId);
             madeChanges |= RemoveKey($@"Software\Classes\{progId}\shell\open\command");
             return madeChanges;
+        }
+        
+        private void DeleteUrlProtocol(string customProtocol)
+        {
+            Registry.ClassesRoot.DeleteSubKey(customProtocol, false);
         }
 
         public void End()

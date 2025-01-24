@@ -15,6 +15,8 @@ using Microsoft.CSharp;
 using Newtonsoft.Json;
 using Microsoft.WindowsAPICodePack.Dialogs;
 using System.Xml.Linq;
+using System.Diagnostics;
+using Ionic.Zip;
 
 namespace Creator
 {
@@ -43,34 +45,186 @@ namespace Creator
 
         private void buildBtn_Click(object sender, EventArgs e)
         {
-            saveBuildDialog.FileName = Project.InstallerName;
+            saveBuildDialog.FileName = Project.InstallerName + Project.Version;
             if (saveBuildDialog.ShowDialog() == DialogResult.OK)
             {
-                CopyDirectory("OriginalProject", "Cache/Project", true);
+                var dialog = new LoadingForm();
+                dialog.Show();
 
-                long size = 0;
-                foreach (var item in Project.Items)
-                {
-                    if (item.IsFolder)
-                        size += DirSize(new DirectoryInfo(Path.Combine(CurrentDirectory, item.RelativePath)));
-                    else
-                        size += new FileInfo(Path.Combine(CurrentDirectory, item.RelativePath)).Length;
-                }
+                Task.Run(() => {
+                    Invoke(new Action(() => { 
+                        Enabled = false;
+                        dialog?.SetStatus("Copying original project to cache...");
+                    }));
 
-                var configData = GenerateConfigDataFromProject((int)size);
+                    try
+                    {
+                        CopyDirectory("OriginalProject", "Cache/Project", true);
+                    }
+                    catch (Exception ex)
+                    {
+                        Invoke(new Action(() => {
+                            MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                            Enabled = true;
+                            dialog?.Close();
+                        }));
+                        return;
+                    }
 
-                var content = File.ReadAllText("Cache/Project/Installer-Repack/MainForm.cs");
-                content = content.Replace("{CONFIG_DATA}", configData);
-                File.WriteAllText("Cache/Project/Installer-Repack/MainForm.cs", content);
+                    Invoke(new Action(() => {
+                        dialog?.SetProgress(0.05f);
+                        dialog?.SetStatus("Counting archive size...");
+                    }));
+                    long size = 0;
+                    try
+                    {
+                        foreach (var item in Project.Items)
+                        {
+                            if (item.IsFolder)
+                                size += DirSize(new DirectoryInfo(Path.Combine(CurrentDirectory, item.RelativePath)));
+                            else
+                                size += new FileInfo(Path.Combine(CurrentDirectory, item.RelativePath)).Length;
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        Invoke(new Action(() => {
+                            MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                            Enabled = true;
+                            dialog?.Close();
+                        }));
+                        return;
+                    }
 
-                content = File.ReadAllText("Cache/Project/Uninstaller/MainForm.cs");
-                content = content.Replace("{CONFIG_DATA}", configData);
-                File.WriteAllText("Cache/Project/Uninstaller/MainForm.cs", content);
+                    Invoke(new Action(() => {
+                        dialog?.SetProgress(0.1f);
+                        dialog?.SetStatus("Modifying C# sources...");
+                    }));
+                    try
+                    {
+                        var configData = GenerateConfigDataFromProject((int)size);
 
-                BuildUninstaller("Cache/Project/Installer-Repack/Resources/Uninstaller.exe");
-                Build(saveBuildDialog.FileName);
+                        var content = File.ReadAllText("Cache/Project/Installer-Repack/MainForm.cs");
+                        content = content.Replace("{CONFIG_DATA}", configData);
+                        File.WriteAllText("Cache/Project/Installer-Repack/MainForm.cs", content);
 
-                Directory.Delete("Cache/Project", true);
+                        content = File.ReadAllText("Cache/Project/Uninstaller/MainForm.cs");
+                        content = content.Replace("{CONFIG_DATA}", configData);
+                        File.WriteAllText("Cache/Project/Uninstaller/MainForm.cs", content);
+
+                        Invoke(new Action(() => {
+                            dialog?.SetProgress(0.15f);
+                            dialog?.SetStatus("Packaging files...");
+                        }));
+
+                        Console.WriteLine("Packaging files...");
+                        if (File.Exists("Cache/Archive.zip")) File.Delete("Cache/Archive.zip");
+                        using (var zip = new ZipFile("Cache/Archive.zip"))
+                        {
+                            int i = 0;
+                            foreach (var item in Project.Items)
+                            {
+                                Invoke(new Action(() => {
+                                    dialog?.SetProgress(0.15f, i, Project.Items.Count, 0.35f);
+                                    dialog?.SetStatus("Packaging: " + item.RelativePath);
+                                }));
+
+                                var targetPath = Path.Combine(CurrentDirectory, item.RelativePath);
+                                if (item.IsFolder)
+                                    zip.AddDirectory(targetPath, Path.GetFileName(item.RelativePath));
+                                else
+                                    zip.AddFile(targetPath, "/");
+
+                                i++;
+                            }
+
+                            Invoke(new Action(() => {
+                                dialog?.SetProgress(0.5f);
+                                dialog?.SetStatus("Saving archive...");
+                            }));
+                            zip.Save();
+                        }
+
+                        Invoke(new Action(() => {
+                            dialog?.SetProgress(0.55f);
+                            dialog?.SetStatus("Copying archive as a resource...");
+                        }));
+
+                        var archiveCopyTarget = "Cache/Project/Installer-Repack/Resources/InstallationArchive.zip";
+                        if (File.Exists(archiveCopyTarget)) File.Delete(archiveCopyTarget);
+                        File.Copy("Cache/Archive.zip", archiveCopyTarget);
+
+                        if (File.Exists(Project.InstallerIcon))
+                        {
+                            Invoke(new Action(() => {
+                                dialog?.SetProgress(0.6f);
+                                dialog?.SetStatus("Copying installer icon as a resource...");
+                            }));
+
+                            var iconCopyTarget = "Cache/Project/Installer-Repack/Resources/Icon.ico";
+                            if (File.Exists(iconCopyTarget)) File.Delete(iconCopyTarget);
+                            File.Copy(Project.InstallerIcon, iconCopyTarget);
+                        }
+
+                        Invoke(new Action(() => {
+                            dialog?.SetProgress(0.65f);
+                            dialog?.SetStatus("Building uninstaller...");
+                        }));
+                        BuildProject("Cache/Project/Uninstaller/Uninstaller.csproj");
+
+                        Invoke(new Action(() => {
+                            dialog?.SetProgress(0.75f);
+                            dialog?.SetStatus("Copying uninstaller as a resource...");
+                        }));
+
+                        var uninstallerCopyTarget = "Cache/Project/Installer-Repack/Resources/Uninstaller.exe";
+                        if (File.Exists(uninstallerCopyTarget)) File.Delete(uninstallerCopyTarget);
+                        File.Copy("Cache/Project/Uninstaller/bin/Release/Uninstaller.exe", uninstallerCopyTarget);
+
+                        Invoke(new Action(() => {
+                            dialog?.SetProgress(0.85f);
+                            dialog?.SetStatus("Building installer...");
+                        }));
+                        Console.WriteLine("Building Installer...");
+                        BuildProject("Cache/Project/Installer-Repack/Installer-Repack.csproj");
+
+                        Invoke(new Action(() => {
+                            dialog?.SetProgress(0.9f);
+                            dialog?.SetStatus("Copying result to target path...");
+                        }));
+                        Console.WriteLine("Copying result to target path...");
+                        if (File.Exists(saveBuildDialog.FileName)) File.Delete(saveBuildDialog.FileName);
+                        File.Copy("Cache/Project/Installer-Repack/bin/Release/Installer-Repack.exe", saveBuildDialog.FileName);
+
+                        Invoke(new Action(() => {
+                            dialog?.SetProgress(1f);
+                            dialog?.SetStatus("Clearing cache...");
+                        }));
+                        Directory.Delete("Cache", true);
+
+                        Invoke(new Action(() => {
+                            Enabled = true;
+                            dialog?.Close();
+
+                            if (MessageBox.Show("Build finished! Do you want to run the installer now?", "Information", MessageBoxButtons.YesNo) == DialogResult.Yes)
+                            {
+                                if (File.Exists(saveBuildDialog.FileName))
+                                    Process.Start(saveBuildDialog.FileName);
+                                else
+                                    MessageBox.Show("Oh actually, we can't find the installer...", "Confusion");
+                            }
+                        }));
+                    }
+                    catch (Exception ex)
+                    {
+                        Invoke(new Action(() => {
+                            MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                            Enabled = true;
+                            dialog?.Close();
+                        }));
+                        return;
+                    }
+                });
             }
         }
         static void CopyDirectory(string sourceDir, string destinationDir, bool recursive)
@@ -92,6 +246,7 @@ namespace Creator
             foreach (FileInfo file in dir.GetFiles())
             {
                 string targetFilePath = Path.Combine(destinationDir, file.Name);
+                if (File.Exists(targetFilePath)) File.Delete(targetFilePath);
                 file.CopyTo(targetFilePath);
             }
 
@@ -106,189 +261,94 @@ namespace Creator
             }
         }
 
-        public void BuildUninstaller(string outputName)
+        public void BuildProject(string csprojPath)
         {
-            string csprojPath = "Cache/Project/Uninstaller/Uninstaller.csproj";
-
             if (!File.Exists(csprojPath))
             {
-                Console.WriteLine("Project file not found.");
-                return;
+                throw new FileNotFoundException($"The specified project file was not found: {csprojPath}");
             }
 
-            // Read and parse the .csproj file
-            XDocument csproj = XDocument.Load(csprojPath);
-
-            // Extract source files
-            IEnumerable<string> sourceFiles = csproj
-                .Descendants("Compile")
-                .Select(e => e.Attribute("Include")?.Value)
-                .Where(f => f != null);
-
-            // Extract references
-            IEnumerable<string> references = csproj
-                .Descendants("Reference")
-                .Select(e => e.Attribute("Include")?.Value)
-                .Where(r => r != null);
-
-            // Setup compiler parameters
-            CompilerParameters parameters = new CompilerParameters
+            var msbuildPath = GetMSBuildPathUsingVsWhere();
+            if (string.IsNullOrEmpty(msbuildPath))
             {
-                GenerateExecutable = true,
-                OutputAssembly = outputName, // Replace with your output name
-                IncludeDebugInformation = true,
-            };
+                throw new InvalidOperationException("MSBuild.exe could not be located. Ensure Visual Studio is installed.");
+            }
 
-            // Add referenced assemblies
-            foreach (string reference in references)
+            string arguments = $"\"{csprojPath}\" /p:Configuration=Release";
+
+            using (var process = new Process())
             {
-                // Resolve reference paths if needed
-                string resolvedPath = ResolveReference(reference);
-                if (resolvedPath != null)
+                process.StartInfo = new ProcessStartInfo
                 {
-                    parameters.ReferencedAssemblies.Add(resolvedPath);
-                }
-            }
+                    FileName = msbuildPath,
+                    Arguments = arguments,
+                    RedirectStandardOutput = true,
+                    RedirectStandardError = true,
+                    UseShellExecute = false,
+                    CreateNoWindow = true
+                };
 
-            // Read source code from files
-            List<string> sourceCode = new List<string>();
-            foreach (string file in sourceFiles)
-            {
-                string filePath = Path.Combine(Path.GetDirectoryName(csprojPath) ?? string.Empty, file);
-                if (File.Exists(filePath))
+                process.Start();
+
+                string output = process.StandardOutput.ReadToEnd();
+                string error = process.StandardError.ReadToEnd();
+
+                process.WaitForExit();
+
+                if (process.ExitCode != 0)
                 {
-                    sourceCode.Add(File.ReadAllText(filePath));
+                    throw new InvalidOperationException($"MSBuild failed with the following error:\n{error}");
                 }
-            }
 
-            Console.WriteLine("Uninstaller Sources: " + sourceCode.Count);
-
-            AppDomain compileDomain = AppDomain.CreateDomain("CompileDomain");
-
-            try
-            {
-                // Create an instance of the compiler worker in the new domain
-                var worker = (CompilerWorker)compileDomain.CreateInstanceAndUnwrap(
-                    Assembly.GetExecutingAssembly().FullName,
-                    typeof(CompilerWorker).FullName);
-
-                // Compile the assembly in the worker
-                bool success = worker.CompileAssembly(parameters, sourceCode.ToArray());
-                if (success)
-                {
-                    Console.WriteLine("Compilation succeeded in another domain.");
-                }
-                else
-                {
-                    Console.WriteLine("Compilation failed in another domain.");
-                }
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Error: {ex.Message}");
-            }
-            finally
-            {
-                // Unload the compile domain
-                AppDomain.Unload(compileDomain);
-                Console.WriteLine("Compile domain unloaded.");
+                Console.WriteLine("MSBuild Output:");
+                Console.WriteLine(output);
             }
         }
 
-        public void Build(string outputName)
+        private static string GetMSBuildPathUsingVsWhere()
         {
-            long size = 0;
-            foreach (var item in Project.Items)
+            string vswherePath = Path.Combine(
+                Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86),
+                "Microsoft Visual Studio", "Installer", "vswhere.exe");
+
+            if (!File.Exists(vswherePath))
             {
-                if (item.IsFolder)
-                    size += DirSize(new DirectoryInfo(Path.Combine(CurrentDirectory, item.RelativePath)));
-                else
-                    size += new FileInfo(Path.Combine(CurrentDirectory, item.RelativePath)).Length;
+                throw new FileNotFoundException($"vswhere.exe not found at: {vswherePath}");
             }
 
-            string csprojPath = "Cache/Project/Installer-Repack/Installer-Repack.csproj";
+            // Command to find MSBuild using vswhere
+            string arguments = "-latest -requires Microsoft.Component.MSBuild -find MSBuild\\**\\Bin\\MSBuild.exe";
 
-            if (!File.Exists(csprojPath))
+            using (var process = new Process())
             {
-                Console.WriteLine("Project file not found.");
-                return;
-            }
-
-            // Read and parse the .csproj file
-            XDocument csproj = XDocument.Load(csprojPath);
-
-            // Extract source files
-            IEnumerable<string> sourceFiles = csproj
-                .Descendants("Compile")
-                .Select(e => e.Attribute("Include")?.Value)
-                .Where(f => f != null);
-
-            // Extract references
-            IEnumerable<string> references = csproj
-                .Descendants("Reference")
-                .Select(e => e.Attribute("Include")?.Value)
-                .Where(r => r != null);
-
-            // Setup compiler parameters
-            CompilerParameters parameters = new CompilerParameters
-            {
-                GenerateExecutable = true,
-                OutputAssembly = outputName, // Replace with your output name
-                IncludeDebugInformation = true,
-            };
-
-            // Add referenced assemblies
-            foreach (string reference in references)
-            {
-                // Resolve reference paths if needed
-                string resolvedPath = ResolveReference(reference);
-                if (resolvedPath != null)
+                process.StartInfo = new ProcessStartInfo
                 {
-                    parameters.ReferencedAssemblies.Add(resolvedPath);
-                }
-            }
+                    FileName = vswherePath,
+                    Arguments = arguments,
+                    RedirectStandardOutput = true,
+                    RedirectStandardError = true,
+                    UseShellExecute = false,
+                    CreateNoWindow = true
+                };
 
-            // Read source code from files
-            List<string> sourceCode = new List<string>();
-            foreach (string file in sourceFiles)
-            {
-                string filePath = Path.Combine(Path.GetDirectoryName(csprojPath) ?? string.Empty, file);
-                if (File.Exists(filePath))
+                process.Start();
+
+                // Read the standard output and error
+                string output = process.StandardOutput.ReadToEnd();
+                string error = process.StandardError.ReadToEnd();
+
+                process.WaitForExit();
+
+                if (process.ExitCode == 0)
                 {
-                    sourceCode.Add(File.ReadAllText(filePath));
-                }
-            }
-
-            Console.WriteLine("Installer Sources: " + sourceCode.Count);
-            AppDomain compileDomain = AppDomain.CreateDomain("CompileDomain");
-
-            try
-            {
-                // Create an instance of the compiler worker in the new domain
-                var worker = (CompilerWorker)compileDomain.CreateInstanceAndUnwrap(
-                    Assembly.GetExecutingAssembly().FullName,
-                    typeof(CompilerWorker).FullName);
-
-                // Compile the assembly in the worker
-                bool success = worker.CompileAssembly(parameters, sourceCode.ToArray());
-                if (success)
-                {
-                    Console.WriteLine("Compilation succeeded in another domain.");
+                    // Output should contain the MSBuild path
+                    return output.Trim();
                 }
                 else
                 {
-                    Console.WriteLine("Compilation failed in another domain.");
+                    throw new InvalidOperationException(
+                        $"vswhere execution failed with error: {error}\nand output: {output}");
                 }
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Error: {ex.Message}");
-            }
-            finally
-            {
-                // Unload the compile domain
-                AppDomain.Unload(compileDomain);
-                Console.WriteLine("Compile domain unloaded.");
             }
         }
 
@@ -310,57 +370,32 @@ namespace Creator
             return size;
         }
 
-        public class CompilerWorker : MarshalByRefObject
-        {
-            public bool CompileAssembly(CompilerParameters parameters, string[] sourceCode)
-            {
-                using (CodeDomProvider provider = CodeDomProvider.CreateProvider("CSharp"))
-                {
-                    CompilerResults result = provider.CompileAssemblyFromSource(parameters, sourceCode);
-
-                    if (result.Errors.HasErrors)
-                    {
-                        Console.WriteLine("Compilation failed:");
-                        foreach (CompilerError error in result.Errors)
-                        {
-                            Console.WriteLine($"  {error}");
-                        }
-                        return false;
-                    }
-                    else
-                    {
-                        Console.WriteLine("Compilation succeeded!");
-                        return true;
-                    }
-                }
-            }
-        }
-
-        private static string ResolveReference(string referenceName)
-        {
-            // Implement logic to resolve reference paths based on your project's requirements.
-            // This might include checking the GAC, NuGet packages, or specific paths.
-            return $"{referenceName}.dll"; // Example: returning DLL name directly.
-        }
-
         public string GenerateConfigDataFromProject(int archiveSize)
         {
             var builder = new StringBuilder();
-            builder.AppendLine("\t\tpublic const string programName = \"" + JsonConvert.SerializeObject(Project.ProgramName) + "\";");
-            builder.AppendLine("\t\tconst string companyName = \"" + JsonConvert.SerializeObject(Project.CompanyName) + "\";");
-            builder.AppendLine("\t\tconst string appVersion = \"" + JsonConvert.SerializeObject(Project.Version) + "\";");
-            builder.AppendLine("\t\tconst string programLink = \"" + JsonConvert.SerializeObject(Project.Link) + "\";");
+            builder.AppendLine("\t\tpublic const string programName = " + JsonConvert.SerializeObject(Project.ProgramName) + ";");
+            builder.AppendLine("\t\tconst string companyName = " + JsonConvert.SerializeObject(Project.CompanyName) + ";");
+            builder.AppendLine("\t\tconst string appVersion = " + JsonConvert.SerializeObject(Project.Version) + ";");
+            builder.AppendLine("\t\tconst string programLink = " + JsonConvert.SerializeObject(Project.Link) + ";");
 
-            builder.AppendLine("\t\tconst string installerName = \"" + JsonConvert.SerializeObject(Project.InstallerName) + "\";");
-            builder.AppendLine("\t\tconst string defaultDestinationPath = \"" + JsonConvert.SerializeObject(Project.DefaultDirectory) + "\";");
-            builder.AppendLine("\t\tconst string exePath = \"" + JsonConvert.SerializeObject(Project.ExecutablePath) + "\";");
-            builder.AppendLine("\t\tconst string programGUID = \"" + JsonConvert.SerializeObject(Project.Guid) + "\";");
+            builder.AppendLine("\t\tconst string installerName = " + JsonConvert.SerializeObject(Project.InstallerName) + ";");
+            builder.AppendLine("\t\tconst string defaultDestinationPath = " + JsonConvert.SerializeObject(ResolveDirectoryPath(Project.DefaultDirectory)) + ";");
+            builder.AppendLine("\t\tconst string exePath = " + JsonConvert.SerializeObject(Project.ExecutablePath) + ";");
+            builder.AppendLine("\t\tconst string programGUID = " + JsonConvert.SerializeObject(Project.Guid) + ";");
 
-            // Associations
+            // File Associations
             builder.AppendLine("\t\tstatic Dictionary<string, string> associations = new Dictionary<string, string>()\r\n\t\t{");
             foreach (var association in Project.FileAssociations)
             {
-                builder.AppendLine("\t\t\t{ \"" + association.Extension + "\", \"" + JsonConvert.SerializeObject(association.Description) + "\" },");
+                builder.AppendLine("\t\t\t{ \"" + association.Extension + "\", " + JsonConvert.SerializeObject(association.Description) + " },");
+            }
+            builder.AppendLine("\t\t};");
+
+            // Url Associations
+            builder.AppendLine("\t\tstatic string[] urlProtocols = \r\n\t\t{");
+            foreach (var association in Project.UrlAssociations)
+            {
+                builder.AppendLine("\t\t\t\"" + association + "\",");
             }
             builder.AppendLine("\t\t};");
 
@@ -436,6 +471,9 @@ namespace Creator
             if (fromProject)
             {
                 fFilesList.Items.Clear();
+                fileTypesList.Items.Clear();
+                urlProtocolList.Items.Clear();
+
                 Project.ConvertItemsAsRelative(CurrentDirectory);
 
                 gProgramNameBox.Text = Project.ProgramName;
@@ -452,6 +490,12 @@ namespace Creator
 
                 foreach (var item in Project.Items)
                     AddItem(item);
+
+                foreach (var item in Project.FileAssociations)
+                    AddFileTypeItem(item);
+
+                foreach (var item in Project.UrlAssociations)
+                    AddUrlProtocolItem(item);
             }
             else
             {
@@ -496,7 +540,11 @@ namespace Creator
         private void irIconBox_Click(object sender, EventArgs e)
         {
             if (openIconDialog.ShowDialog() == DialogResult.OK)
+            {
+                var icon = new Icon(openIconDialog.FileName);
+                irIconBox.Image = icon.ToBitmap();
                 Project.InstallerIcon = GetRelativePath(openIconDialog.FileName, CurrentDirectory);
+            }
         }
 
         private void fAddFilesBtn_Click(object sender, EventArgs e)
@@ -575,6 +623,62 @@ namespace Creator
                 fFilesList.Items.Remove(item);
             }
         }
+
+        private void fileTypeAddBtn_Click(object sender, EventArgs e)
+        {
+            if (Project.FileAssociations.Exists(val => val.Extension == fileTypeExtBox.Text))
+                return;
+
+            var assoc = new InstallerFileAssoc(fileTypeExtBox.Text, fileTypeDescBox.Text);
+            Project.FileAssociations.Add(assoc);
+            AddFileTypeItem(assoc);
+        }
+
+        public void AddFileTypeItem(InstallerFileAssoc assoc)
+        {
+            var item = new ListViewItem(new string[] {
+                assoc.Extension,
+                assoc.Description
+            })
+            {
+                Tag = assoc
+            };
+            fileTypesList.Items.Add(item);
+        }
+
+        private void urlProtocolAddBtn_Click(object sender, EventArgs e)
+        {
+            if (Project.UrlAssociations.Contains(urlAssocTextBox.Text))
+                return;
+
+            Project.UrlAssociations.Add(urlAssocTextBox.Text);
+            AddUrlProtocolItem(urlAssocTextBox.Text);
+        }
+
+        public void AddUrlProtocolItem(string item)
+        {
+            urlProtocolList.Items.Add(item);
+        }
+
+        private void removeToolStripMenuItem1_Click(object sender, EventArgs e)
+        {
+            var items = new List<ListViewItem>(fileTypesList.SelectedItems.Cast<ListViewItem>());
+            foreach (var item in items)
+            {
+                Project.FileAssociations.Remove(item.Tag as InstallerFileAssoc);
+                fileTypesList.Items.Remove(item);
+            }
+        }
+
+        private void removeToolStripMenuItem2_Click(object sender, EventArgs e)
+        {
+            var items = new List<string>(urlProtocolList.SelectedItems.Cast<string>());
+            foreach (var item in items)
+            {
+                Project.UrlAssociations.Remove(item);
+                urlProtocolList.Items.Remove(item);
+            }
+        }
     }
 
     public class InstallerProject
@@ -592,6 +696,8 @@ namespace Creator
         public string InstallerIcon { get; set; }
 
         public List<InstallerItem> Items { get; set; } = new List<InstallerItem>();
+
+        public List<string> UrlAssociations { get; set; } = new List<string>();
 
         public List<InstallerFileAssoc> FileAssociations { get; set; } = new List<InstallerFileAssoc>();
 

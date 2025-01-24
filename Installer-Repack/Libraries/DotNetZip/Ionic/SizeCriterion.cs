@@ -27,7 +27,6 @@ namespace Ionic
 
 		private bool _Evaluate(long Length)
 		{
-			bool flag = false;
 			switch (Operator)
 			{
 			case ComparisonOperator.GreaterThanOrEqualTo:

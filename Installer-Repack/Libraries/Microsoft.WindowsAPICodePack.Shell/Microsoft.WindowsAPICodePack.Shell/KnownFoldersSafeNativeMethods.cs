@@ -7,8 +7,9 @@ namespace Microsoft.WindowsAPICodePack.Shell
 	internal static class KnownFoldersSafeNativeMethods
 	{
 		internal struct NativeFolderDefinition
-		{
-			internal FolderCategory category;
+        {
+#pragma warning disable 0649
+            internal FolderCategory category;
 
 			internal IntPtr name;
 
@@ -33,6 +34,7 @@ namespace Microsoft.WindowsAPICodePack.Shell
 			internal DefinitionOptions definitionOptions;
 
 			internal Guid folderTypeId;
-		}
-	}
+#pragma warning restore 0649
+        }
+    }
 }

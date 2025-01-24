@@ -3936,7 +3936,7 @@ namespace Ionic.Zip
 				}
 				if (!exeToGenerate.EndsWith(".exe") && Verbose)
 				{
-					StatusMessageTextWriter.WriteLine("Warning: The generated self-extracting file will not have an .exe extension.");
+					StatusMessageTextWriter.WriteLine("Warning: The generated self-extracting file will not have an .exe protocol.");
 				}
 				text4 = TempFileFolder ?? Path.GetDirectoryName(exeToGenerate);
 				text2 = GenerateTempPathname(text4, "exe");

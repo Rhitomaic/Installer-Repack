@@ -122,10 +122,6 @@ namespace Microsoft.WindowsAPICodePack.Dialogs
 				return;
 			}
 			_ = propertyList[0];
-			if (1 == 0)
-			{
-				return;
-			}
 			StringBuilder stringBuilder = new StringBuilder("prop:");
 			foreach (PropertyKey key in propertyList)
 			{

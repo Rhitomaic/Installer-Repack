@@ -4728,7 +4728,6 @@ namespace Ionic.Zip
 		private string NormalizeFileName()
 		{
 			string text = FileName.Replace("\\", "/");
-			string text2 = null;
 			if (_TrimVolumeFromFullyQualifiedPaths && FileName.Length >= 3 && FileName[1] == ':' && text[2] == '/')
 			{
 				return text.Substring(3);

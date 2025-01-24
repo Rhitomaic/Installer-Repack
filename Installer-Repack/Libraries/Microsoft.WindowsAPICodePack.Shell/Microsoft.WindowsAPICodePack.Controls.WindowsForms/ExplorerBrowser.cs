@@ -232,7 +232,6 @@ namespace Microsoft.WindowsAPICodePack.Controls.WindowsForms
 
 		HResult IServiceProvider.QueryService(ref Guid guidService, ref Guid riid, out IntPtr ppvObject)
 		{
-			HResult hResult = HResult.Ok;
 			if (guidService.CompareTo(new Guid("e07010ec-bc17-44c0-97b0-46c7c95b9edc")) == 0)
 			{
 				ppvObject = Marshal.GetComInterfaceForObject(this, typeof(IExplorerPaneVisibility));

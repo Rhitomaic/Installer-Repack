@@ -240,14 +240,16 @@ namespace Microsoft.WindowsAPICodePack.Shell
 			NonIndexableLocationWarning
 		}
 
-		internal struct ShellNotifyStruct
+#pragma warning disable 0649
+        internal struct ShellNotifyStruct
 		{
 			internal IntPtr item1;
 
 			internal IntPtr item2;
-		}
+        }
+#pragma warning restore 0649
 
-		internal struct SHChangeNotifyEntry
+        internal struct SHChangeNotifyEntry
 		{
 			internal IntPtr pIdl;
 
