@@ -18,28 +18,28 @@ namespace Aseprite_Repack
         #region Setup Config
 
         // The original name of the program
-        public const string programName = "Godot";
+        public const string programName = "{PROGRAM_NAME}";
 
         // The company/creator name of the program
-        const string companyName = "Godot Foundation";
+        const string companyName = "{COMPANY_NAME}";
 
         // The version of the program
-        const string appVersion = "3.5.2-stable";
+        const string appVersion = "{PROGRAM_VERSION}";
 
         // The link for the program
-        const string programLink = "https://godotengine.org";
+        const string programLink = "{PROGRAM_LINK}";
 
         // The window title of the setup
-        const string installerName = "Godot Setup";
+        const string installerName = "{INSTALLER_NAME}";
 
         // This is what will be shown default on installation path
-        const string defaultDestinationPath = "C:\\Program Files (x86)\\Godot";
+        const string defaultDestinationPath = "{DEFAULT_INSTALL_DIRECTORY}";
 
         // This path is relative to the destination path
-        const string exePath = "Godot_v3.5.2-stable_win64.exe";
+        const string exePath = "{EXECUTABLE_PATH}";
 
         // A special GUID specific for the program (you can use Guid.NewGuid() too)
-        const string programGUID = "{5c023135-e620-402b-b2ae-17c670e5f843}";
+        const string programGUID = "{PROGRAM_GUID}";
 
         // Format: { <Extension>, <FileDescription> }
         static Dictionary<string, string> associations = new Dictionary<string, string>()
@@ -48,7 +48,7 @@ namespace Aseprite_Repack
         };
 
         // Manually put the extracted size of your program (in bytes)
-        long archiveSize = 76582340;
+        const long archiveSize = 76582340;
 
         // Put your archive on InstallerResource.resx
         static byte[] archiveBytes = InstallerResource.InstallationArchive;
