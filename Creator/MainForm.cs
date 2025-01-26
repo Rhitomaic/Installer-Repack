@@ -45,13 +45,15 @@ namespace Creator
 
         private void buildBtn_Click(object sender, EventArgs e)
         {
+            if (!string.IsNullOrWhiteSpace(CurrentPath))
+                saveBuildDialog.InitialDirectory = CurrentDirectory;
             saveBuildDialog.FileName = Project.InstallerName + Project.Version;
             if (saveBuildDialog.ShowDialog() == DialogResult.OK)
             {
                 var dialog = new LoadingForm();
                 dialog.Show();
 
-                Task.Run(() => {
+                Task.Run(async () => {
                     Invoke(new Action(() => { 
                         Enabled = false;
                         dialog?.SetStatus("Copying original project to cache...");
@@ -135,6 +137,8 @@ namespace Creator
                                 else
                                     zip.AddFile(targetPath, "/");
 
+                                await Task.Delay(50);
+
                                 i++;
                             }
 
@@ -150,11 +154,14 @@ namespace Creator
                             dialog?.SetStatus("Copying archive as a resource...");
                         }));
 
+                        await Task.Delay(200);
+
                         var archiveCopyTarget = "Cache/Project/Installer-Repack/Resources/InstallationArchive.zip";
                         if (File.Exists(archiveCopyTarget)) File.Delete(archiveCopyTarget);
                         File.Copy("Cache/Archive.zip", archiveCopyTarget);
 
-                        if (File.Exists(Project.InstallerIcon))
+                        var iconPath = Path.Combine(CurrentDirectory, Project.InstallerIcon);
+                        if (File.Exists(iconPath))
                         {
                             Invoke(new Action(() => {
                                 dialog?.SetProgress(0.6f);
@@ -163,7 +170,8 @@ namespace Creator
 
                             var iconCopyTarget = "Cache/Project/Installer-Repack/Resources/Icon.ico";
                             if (File.Exists(iconCopyTarget)) File.Delete(iconCopyTarget);
-                            File.Copy(Project.InstallerIcon, iconCopyTarget);
+                            File.Copy(iconPath, iconCopyTarget);
+                            await Task.Delay(100);
                         }
 
                         Invoke(new Action(() => {
@@ -488,6 +496,10 @@ namespace Creator
                 irNameBox.Text = Project.InstallerName;
                 irIconBox.Text = Project.InstallerIcon;
 
+                var iconPath = Path.Combine(CurrentDirectory, Project.InstallerIcon);
+                if (File.Exists(iconPath))
+                    irIconBox.Image = new Icon(iconPath).ToBitmap();
+
                 foreach (var item in Project.Items)
                     AddItem(item);
 
@@ -544,6 +556,7 @@ namespace Creator
                 var icon = new Icon(openIconDialog.FileName);
                 irIconBox.Image = icon.ToBitmap();
                 Project.InstallerIcon = GetRelativePath(openIconDialog.FileName, CurrentDirectory);
+                irIconBox.Text = Project.InstallerIcon;
             }
         }
 
