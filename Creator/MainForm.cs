@@ -305,7 +305,8 @@ namespace Creator
 
                 if (process.ExitCode != 0)
                 {
-                    throw new InvalidOperationException($"MSBuild failed with the following error:\n{error}");
+                    File.WriteAllText("Build.log", output);
+                    throw new InvalidOperationException($"MSBuild failed with the following error:\n{error}\nand output of:\n{output}");
                 }
 
                 Console.WriteLine("MSBuild Output:");
@@ -387,7 +388,7 @@ namespace Creator
             builder.AppendLine("\t\tconst string programLink = " + JsonConvert.SerializeObject(Project.Link) + ";");
 
             builder.AppendLine("\t\tconst string installerName = " + JsonConvert.SerializeObject(Project.InstallerName) + ";");
-            builder.AppendLine("\t\tconst string defaultDestinationPath = " + JsonConvert.SerializeObject(ResolveDirectoryPath(Project.DefaultDirectory)) + ";");
+            builder.AppendLine("\t\tstatic string defaultDestinationPath = " + JsonConvert.SerializeObject(Project.DefaultDirectory) + ";");
             builder.AppendLine("\t\tconst string exePath = " + JsonConvert.SerializeObject(Project.ExecutablePath) + ";");
             builder.AppendLine("\t\tconst string programGUID = " + JsonConvert.SerializeObject(Project.Guid) + ";");
 
@@ -413,6 +414,8 @@ namespace Creator
 
         public string ResolveDirectoryPath(string path)
         {
+            path = path.Replace("%UserDocuments%", Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments));
+            path = path.Replace("%UserProfile%", Environment.GetFolderPath(Environment.SpecialFolder.UserProfile));
             path = path.Replace("%LocalAppData%", Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData));
             path = path.Replace("%AppData%", Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData));
             path = path.Replace("%ProgramFiles%", Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles));

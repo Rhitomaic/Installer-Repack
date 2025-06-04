@@ -52,6 +52,7 @@ namespace Aseprite_Repack
         public MainForm()
         {
             InitializeComponent();
+            defaultDestinationPath = ResolveDirectoryPath(defaultDestinationPath);
             sections = new[]{
                 welcomePanel,
                 pathPanel,
@@ -61,6 +62,17 @@ namespace Aseprite_Repack
             };
             ApplyConfigs();
             Shown += MainForm_Shown;
+        }
+
+        public string ResolveDirectoryPath(string path)
+        {
+            path = path.Replace("%UserDocuments%", Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments));
+            path = path.Replace("%UserProfile%", Environment.GetFolderPath(Environment.SpecialFolder.UserProfile));
+            path = path.Replace("%LocalAppData%", Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData));
+            path = path.Replace("%AppData%", Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData));
+            path = path.Replace("%ProgramFiles%", Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles));
+            path = path.Replace("%ProgramFilesX86%", Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86));
+            return path;
         }
 
         public void ApplyConfigs()
@@ -498,7 +510,16 @@ namespace Aseprite_Repack
 
         public void CheckIfEligible()
         {
+        	if (freeSpace <= 0) {
+        		descriptionLabel.Text += " We're also trying to check for free space but it doesn't seem to be going correctly. The installation might fail";
+            	LeftButton.Enabled = true;
+        		return;
+        	}
+        	
             LeftButton.Enabled = archiveSize < freeSpace;
+            if (!LeftButton.Enabled) {
+            	descriptionLabel.Text = "You're trying to install this program but you don't have enough free space left, expected " + BytesToString(archiveSize) + " left but only found " + BytesToString(freeSpace) + " free";
+            }
         }
 
         static string BytesToString(long byteCount)

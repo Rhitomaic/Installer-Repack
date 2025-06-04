@@ -27,6 +27,7 @@ namespace Uninstaller
         public MainForm()
         {
             InitializeComponent();
+            defaultDestinationPath = ResolveDirectoryPath(defaultDestinationPath);
             if(File.Exists(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Uninstall.inf")))
             {
                 var lines = File.ReadAllLines(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Uninstall.inf"));
@@ -37,6 +38,17 @@ namespace Uninstaller
                 MessageBox.Show("Uninstall manifest file isn't found", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 Close();
             }
+        }
+
+        public string ResolveDirectoryPath(string path)
+        {
+            path = path.Replace("%UserDocuments%", Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments));
+            path = path.Replace("%UserProfile%", Environment.GetFolderPath(Environment.SpecialFolder.UserProfile));
+            path = path.Replace("%LocalAppData%", Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData));
+            path = path.Replace("%AppData%", Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData));
+            path = path.Replace("%ProgramFiles%", Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles));
+            path = path.Replace("%ProgramFilesX86%", Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86));
+            return path;
         }
         #endregion
 
