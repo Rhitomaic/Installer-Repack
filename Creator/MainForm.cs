@@ -26,15 +26,21 @@ namespace Creator
         public static string CurrentDirectory { get; set; }
 
         public static InstallerProject Project = new InstallerProject();
+        public static string SettingsPath = "settings.json";
 
         public MainForm(string[] args)
         {
+            SettingsPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Installer-Repack", SettingsPath);
             InitializeComponent();
 
             foreach (var arg in args)
             {
                 if (File.Exists(arg) && Path.GetExtension(arg) == ".irp")
                     LoadProject(arg);
+            }
+
+            if (File.Exists(SettingsPath)) {
+                msBuildBox.Text = File.ReadAllText(SettingsPath);
             }
         }
 
@@ -276,11 +282,17 @@ namespace Creator
                 throw new FileNotFoundException($"The specified project file was not found: {csprojPath}");
             }
 
-            var msbuildPath = GetMSBuildPathUsingVsWhere();
+            var msbuildPath = string.IsNullOrWhiteSpace(msBuildBox.Text) ? GetMSBuildPathUsingVsWhere() : msBuildBox.Text;
             if (string.IsNullOrEmpty(msbuildPath))
             {
                 throw new InvalidOperationException("MSBuild.exe could not be located. Ensure Visual Studio is installed.");
             }
+
+            var baseDir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Installer-Repack");
+            SettingsPath = Path.Combine(baseDir, SettingsPath);
+            if (!Directory.Exists(baseDir)) Directory.CreateDirectory(baseDir);
+
+            File.WriteAllText(SettingsPath, msBuildBox.Text);
 
             string arguments = $"\"{csprojPath}\" /p:Configuration=Release";
 
@@ -350,11 +362,9 @@ namespace Creator
 
                 if (process.ExitCode == 0)
                 {
-                    // Output should contain the MSBuild path
                     return output.Trim();
                 }
-                else
-                {
+                else {
                     throw new InvalidOperationException(
                         $"vswhere execution failed with error: {error}\nand output: {output}");
                 }

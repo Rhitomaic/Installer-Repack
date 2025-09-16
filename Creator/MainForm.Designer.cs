@@ -64,30 +64,32 @@
             this.nameColumn = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.pathColumn = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.typeColumn = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.fFileListContextMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.removeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.associationTab = new System.Windows.Forms.TabPage();
+            this.fileTypeDescExt = new System.Windows.Forms.Label();
+            this.fileTypeExtLbl = new System.Windows.Forms.Label();
+            this.fileTypeDescBox = new System.Windows.Forms.TextBox();
+            this.fileTypeExtBox = new System.Windows.Forms.TextBox();
+            this.urlAssocTextBox = new System.Windows.Forms.TextBox();
+            this.urlProtocolAddBtn = new System.Windows.Forms.Button();
+            this.fileTypeAddBtn = new System.Windows.Forms.Button();
+            this.urlProtocolLbl = new System.Windows.Forms.Label();
+            this.fileTypeLbl = new System.Windows.Forms.Label();
+            this.fileTypesList = new System.Windows.Forms.ListView();
+            this.extensionColumn = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.descriptionColumn = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.fileTypeContextMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.removeToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
+            this.urlProtocolList = new System.Windows.Forms.ListBox();
+            this.urlProtocolContextMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.removeToolStripMenuItem2 = new System.Windows.Forms.ToolStripMenuItem();
             this.openIconDialog = new System.Windows.Forms.OpenFileDialog();
             this.openInstallerDialog = new System.Windows.Forms.OpenFileDialog();
             this.saveInstallerDialog = new System.Windows.Forms.SaveFileDialog();
             this.saveBuildDialog = new System.Windows.Forms.SaveFileDialog();
-            this.fFileListContextMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
-            this.removeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.urlProtocolList = new System.Windows.Forms.ListBox();
-            this.fileTypesList = new System.Windows.Forms.ListView();
-            this.fileTypeLbl = new System.Windows.Forms.Label();
-            this.urlProtocolLbl = new System.Windows.Forms.Label();
-            this.extensionColumn = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.descriptionColumn = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.fileTypeAddBtn = new System.Windows.Forms.Button();
-            this.urlProtocolAddBtn = new System.Windows.Forms.Button();
-            this.urlAssocTextBox = new System.Windows.Forms.TextBox();
-            this.fileTypeExtBox = new System.Windows.Forms.TextBox();
-            this.fileTypeDescBox = new System.Windows.Forms.TextBox();
-            this.fileTypeExtLbl = new System.Windows.Forms.Label();
-            this.fileTypeDescExt = new System.Windows.Forms.Label();
-            this.fileTypeContextMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
-            this.removeToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
-            this.urlProtocolContextMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
-            this.removeToolStripMenuItem2 = new System.Windows.Forms.ToolStripMenuItem();
+            this.msBuildLabel = new System.Windows.Forms.Label();
+            this.msBuildBox = new System.Windows.Forms.TextBox();
             this.mainTabs.SuspendLayout();
             this.detailsTab.SuspendLayout();
             this.irGroup.SuspendLayout();
@@ -95,8 +97,8 @@
             this.itGroup.SuspendLayout();
             this.gGroup.SuspendLayout();
             this.filesTab.SuspendLayout();
-            this.associationTab.SuspendLayout();
             this.fFileListContextMenu.SuspendLayout();
+            this.associationTab.SuspendLayout();
             this.fileTypeContextMenu.SuspendLayout();
             this.urlProtocolContextMenu.SuspendLayout();
             this.SuspendLayout();
@@ -110,7 +112,7 @@
             this.mainTabs.Location = new System.Drawing.Point(0, 0);
             this.mainTabs.Name = "mainTabs";
             this.mainTabs.SelectedIndex = 0;
-            this.mainTabs.Size = new System.Drawing.Size(565, 474);
+            this.mainTabs.Size = new System.Drawing.Size(565, 507);
             this.mainTabs.TabIndex = 0;
             // 
             // detailsTab
@@ -124,7 +126,7 @@
             this.detailsTab.Location = new System.Drawing.Point(4, 22);
             this.detailsTab.Name = "detailsTab";
             this.detailsTab.Padding = new System.Windows.Forms.Padding(3);
-            this.detailsTab.Size = new System.Drawing.Size(557, 448);
+            this.detailsTab.Size = new System.Drawing.Size(557, 481);
             this.detailsTab.TabIndex = 0;
             this.detailsTab.Text = "Details";
             this.detailsTab.UseVisualStyleBackColor = true;
@@ -134,7 +136,7 @@
             this.buildBtn.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.buildBtn.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.buildBtn.Location = new System.Drawing.Point(220, 409);
+            this.buildBtn.Location = new System.Drawing.Point(220, 442);
             this.buildBtn.Name = "buildBtn";
             this.buildBtn.Size = new System.Drawing.Size(331, 33);
             this.buildBtn.TabIndex = 5;
@@ -145,7 +147,7 @@
             // saveBtn
             // 
             this.saveBtn.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.saveBtn.Location = new System.Drawing.Point(114, 409);
+            this.saveBtn.Location = new System.Drawing.Point(114, 442);
             this.saveBtn.Name = "saveBtn";
             this.saveBtn.Size = new System.Drawing.Size(100, 33);
             this.saveBtn.TabIndex = 4;
@@ -156,7 +158,7 @@
             // loadBtn
             // 
             this.loadBtn.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.loadBtn.Location = new System.Drawing.Point(8, 409);
+            this.loadBtn.Location = new System.Drawing.Point(8, 442);
             this.loadBtn.Name = "loadBtn";
             this.loadBtn.Size = new System.Drawing.Size(100, 33);
             this.loadBtn.TabIndex = 3;
@@ -169,13 +171,15 @@
             this.irGroup.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
+            this.irGroup.Controls.Add(this.msBuildBox);
+            this.irGroup.Controls.Add(this.msBuildLabel);
             this.irGroup.Controls.Add(this.irIconLbl);
             this.irGroup.Controls.Add(this.irIconBox);
             this.irGroup.Controls.Add(this.irNameBox);
             this.irGroup.Controls.Add(this.irNameLbl);
             this.irGroup.Location = new System.Drawing.Point(8, 281);
             this.irGroup.Name = "irGroup";
-            this.irGroup.Size = new System.Drawing.Size(543, 122);
+            this.irGroup.Size = new System.Drawing.Size(543, 155);
             this.irGroup.TabIndex = 2;
             this.irGroup.TabStop = false;
             this.irGroup.Text = "Installer";
@@ -470,6 +474,20 @@
             // 
             this.typeColumn.Text = "Type";
             // 
+            // fFileListContextMenu
+            // 
+            this.fFileListContextMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.removeToolStripMenuItem});
+            this.fFileListContextMenu.Name = "fFileListContextMenu";
+            this.fFileListContextMenu.Size = new System.Drawing.Size(118, 26);
+            // 
+            // removeToolStripMenuItem
+            // 
+            this.removeToolStripMenuItem.Name = "removeToolStripMenuItem";
+            this.removeToolStripMenuItem.Size = new System.Drawing.Size(117, 22);
+            this.removeToolStripMenuItem.Text = "Remove";
+            this.removeToolStripMenuItem.Click += new System.EventHandler(this.removeToolStripMenuItem_Click);
+            // 
             // associationTab
             // 
             this.associationTab.Controls.Add(this.fileTypeDescExt);
@@ -489,6 +507,166 @@
             this.associationTab.TabIndex = 2;
             this.associationTab.Text = "Association";
             this.associationTab.UseVisualStyleBackColor = true;
+            // 
+            // fileTypeDescExt
+            // 
+            this.fileTypeDescExt.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.fileTypeDescExt.AutoSize = true;
+            this.fileTypeDescExt.Location = new System.Drawing.Point(8, 392);
+            this.fileTypeDescExt.Name = "fileTypeDescExt";
+            this.fileTypeDescExt.Size = new System.Drawing.Size(60, 13);
+            this.fileTypeDescExt.TabIndex = 10;
+            this.fileTypeDescExt.Text = "Description";
+            // 
+            // fileTypeExtLbl
+            // 
+            this.fileTypeExtLbl.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.fileTypeExtLbl.AutoSize = true;
+            this.fileTypeExtLbl.Location = new System.Drawing.Point(8, 366);
+            this.fileTypeExtLbl.Name = "fileTypeExtLbl";
+            this.fileTypeExtLbl.Size = new System.Drawing.Size(53, 13);
+            this.fileTypeExtLbl.TabIndex = 9;
+            this.fileTypeExtLbl.Text = "Extension";
+            // 
+            // fileTypeDescBox
+            // 
+            this.fileTypeDescBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.fileTypeDescBox.Location = new System.Drawing.Point(79, 389);
+            this.fileTypeDescBox.Name = "fileTypeDescBox";
+            this.fileTypeDescBox.Size = new System.Drawing.Size(230, 20);
+            this.fileTypeDescBox.TabIndex = 8;
+            this.fileTypeDescBox.Text = "My Program File";
+            // 
+            // fileTypeExtBox
+            // 
+            this.fileTypeExtBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.fileTypeExtBox.Location = new System.Drawing.Point(79, 363);
+            this.fileTypeExtBox.Name = "fileTypeExtBox";
+            this.fileTypeExtBox.Size = new System.Drawing.Size(230, 20);
+            this.fileTypeExtBox.TabIndex = 7;
+            this.fileTypeExtBox.Text = ".myprogram";
+            // 
+            // urlAssocTextBox
+            // 
+            this.urlAssocTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.urlAssocTextBox.Location = new System.Drawing.Point(315, 418);
+            this.urlAssocTextBox.Name = "urlAssocTextBox";
+            this.urlAssocTextBox.Size = new System.Drawing.Size(153, 20);
+            this.urlAssocTextBox.TabIndex = 6;
+            this.urlAssocTextBox.Text = "myprogram";
+            // 
+            // urlProtocolAddBtn
+            // 
+            this.urlProtocolAddBtn.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.urlProtocolAddBtn.Location = new System.Drawing.Point(474, 416);
+            this.urlProtocolAddBtn.Name = "urlProtocolAddBtn";
+            this.urlProtocolAddBtn.Size = new System.Drawing.Size(75, 23);
+            this.urlProtocolAddBtn.TabIndex = 5;
+            this.urlProtocolAddBtn.Text = "Add";
+            this.urlProtocolAddBtn.UseVisualStyleBackColor = true;
+            this.urlProtocolAddBtn.Click += new System.EventHandler(this.urlProtocolAddBtn_Click);
+            // 
+            // fileTypeAddBtn
+            // 
+            this.fileTypeAddBtn.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.fileTypeAddBtn.Location = new System.Drawing.Point(234, 415);
+            this.fileTypeAddBtn.Name = "fileTypeAddBtn";
+            this.fileTypeAddBtn.Size = new System.Drawing.Size(75, 23);
+            this.fileTypeAddBtn.TabIndex = 4;
+            this.fileTypeAddBtn.Text = "Add";
+            this.fileTypeAddBtn.UseVisualStyleBackColor = true;
+            this.fileTypeAddBtn.Click += new System.EventHandler(this.fileTypeAddBtn_Click);
+            // 
+            // urlProtocolLbl
+            // 
+            this.urlProtocolLbl.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.urlProtocolLbl.AutoSize = true;
+            this.urlProtocolLbl.Location = new System.Drawing.Point(312, 8);
+            this.urlProtocolLbl.Name = "urlProtocolLbl";
+            this.urlProtocolLbl.Size = new System.Drawing.Size(70, 13);
+            this.urlProtocolLbl.TabIndex = 3;
+            this.urlProtocolLbl.Text = "Url Protocols:";
+            // 
+            // fileTypeLbl
+            // 
+            this.fileTypeLbl.AutoSize = true;
+            this.fileTypeLbl.Location = new System.Drawing.Point(8, 8);
+            this.fileTypeLbl.Name = "fileTypeLbl";
+            this.fileTypeLbl.Size = new System.Drawing.Size(58, 13);
+            this.fileTypeLbl.TabIndex = 2;
+            this.fileTypeLbl.Text = "File Types:";
+            // 
+            // fileTypesList
+            // 
+            this.fileTypesList.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.fileTypesList.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.fileTypesList.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
+            this.extensionColumn,
+            this.descriptionColumn});
+            this.fileTypesList.ContextMenuStrip = this.fileTypeContextMenu;
+            this.fileTypesList.FullRowSelect = true;
+            this.fileTypesList.GridLines = true;
+            this.fileTypesList.HideSelection = false;
+            this.fileTypesList.Location = new System.Drawing.Point(8, 29);
+            this.fileTypesList.Name = "fileTypesList";
+            this.fileTypesList.Size = new System.Drawing.Size(301, 328);
+            this.fileTypesList.TabIndex = 1;
+            this.fileTypesList.UseCompatibleStateImageBehavior = false;
+            this.fileTypesList.View = System.Windows.Forms.View.Details;
+            // 
+            // extensionColumn
+            // 
+            this.extensionColumn.Text = "Extension";
+            this.extensionColumn.Width = 88;
+            // 
+            // descriptionColumn
+            // 
+            this.descriptionColumn.Text = "Description";
+            this.descriptionColumn.Width = 159;
+            // 
+            // fileTypeContextMenu
+            // 
+            this.fileTypeContextMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.removeToolStripMenuItem1});
+            this.fileTypeContextMenu.Name = "fileTypeContextMenu";
+            this.fileTypeContextMenu.Size = new System.Drawing.Size(118, 26);
+            // 
+            // removeToolStripMenuItem1
+            // 
+            this.removeToolStripMenuItem1.Name = "removeToolStripMenuItem1";
+            this.removeToolStripMenuItem1.Size = new System.Drawing.Size(117, 22);
+            this.removeToolStripMenuItem1.Text = "Remove";
+            this.removeToolStripMenuItem1.Click += new System.EventHandler(this.removeToolStripMenuItem1_Click);
+            // 
+            // urlProtocolList
+            // 
+            this.urlProtocolList.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.urlProtocolList.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.urlProtocolList.ContextMenuStrip = this.urlProtocolContextMenu;
+            this.urlProtocolList.FormattingEnabled = true;
+            this.urlProtocolList.Location = new System.Drawing.Point(315, 29);
+            this.urlProtocolList.Name = "urlProtocolList";
+            this.urlProtocolList.Size = new System.Drawing.Size(234, 379);
+            this.urlProtocolList.TabIndex = 0;
+            // 
+            // urlProtocolContextMenu
+            // 
+            this.urlProtocolContextMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.removeToolStripMenuItem2});
+            this.urlProtocolContextMenu.Name = "urlProtocolContextMenu";
+            this.urlProtocolContextMenu.Size = new System.Drawing.Size(118, 26);
+            // 
+            // removeToolStripMenuItem2
+            // 
+            this.removeToolStripMenuItem2.Name = "removeToolStripMenuItem2";
+            this.removeToolStripMenuItem2.Size = new System.Drawing.Size(117, 22);
+            this.removeToolStripMenuItem2.Text = "Remove";
+            this.removeToolStripMenuItem2.Click += new System.EventHandler(this.removeToolStripMenuItem2_Click);
             // 
             // openIconDialog
             // 
@@ -518,185 +696,29 @@
             this.saveBuildDialog.RestoreDirectory = true;
             this.saveBuildDialog.Title = "Save your installer file!";
             // 
-            // fFileListContextMenu
+            // msBuildLabel
             // 
-            this.fFileListContextMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.removeToolStripMenuItem});
-            this.fFileListContextMenu.Name = "fFileListContextMenu";
-            this.fFileListContextMenu.Size = new System.Drawing.Size(118, 26);
+            this.msBuildLabel.AutoSize = true;
+            this.msBuildLabel.Location = new System.Drawing.Point(16, 117);
+            this.msBuildLabel.Name = "msBuildLabel";
+            this.msBuildLabel.Size = new System.Drawing.Size(71, 13);
+            this.msBuildLabel.TabIndex = 19;
+            this.msBuildLabel.Text = "MSBuild Path";
             // 
-            // removeToolStripMenuItem
+            // msBuildBox
             // 
-            this.removeToolStripMenuItem.Name = "removeToolStripMenuItem";
-            this.removeToolStripMenuItem.Size = new System.Drawing.Size(117, 22);
-            this.removeToolStripMenuItem.Text = "Remove";
-            this.removeToolStripMenuItem.Click += new System.EventHandler(this.removeToolStripMenuItem_Click);
-            // 
-            // urlProtocolList
-            // 
-            this.urlProtocolList.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            this.msBuildBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.urlProtocolList.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.urlProtocolList.ContextMenuStrip = this.urlProtocolContextMenu;
-            this.urlProtocolList.FormattingEnabled = true;
-            this.urlProtocolList.Location = new System.Drawing.Point(315, 29);
-            this.urlProtocolList.Name = "urlProtocolList";
-            this.urlProtocolList.Size = new System.Drawing.Size(234, 379);
-            this.urlProtocolList.TabIndex = 0;
-            // 
-            // fileTypesList
-            // 
-            this.fileTypesList.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.fileTypesList.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.fileTypesList.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
-            this.extensionColumn,
-            this.descriptionColumn});
-            this.fileTypesList.ContextMenuStrip = this.fileTypeContextMenu;
-            this.fileTypesList.FullRowSelect = true;
-            this.fileTypesList.GridLines = true;
-            this.fileTypesList.HideSelection = false;
-            this.fileTypesList.Location = new System.Drawing.Point(8, 29);
-            this.fileTypesList.Name = "fileTypesList";
-            this.fileTypesList.Size = new System.Drawing.Size(301, 328);
-            this.fileTypesList.TabIndex = 1;
-            this.fileTypesList.UseCompatibleStateImageBehavior = false;
-            this.fileTypesList.View = System.Windows.Forms.View.Details;
-            // 
-            // fileTypeLbl
-            // 
-            this.fileTypeLbl.AutoSize = true;
-            this.fileTypeLbl.Location = new System.Drawing.Point(8, 8);
-            this.fileTypeLbl.Name = "fileTypeLbl";
-            this.fileTypeLbl.Size = new System.Drawing.Size(58, 13);
-            this.fileTypeLbl.TabIndex = 2;
-            this.fileTypeLbl.Text = "File Types:";
-            // 
-            // urlProtocolLbl
-            // 
-            this.urlProtocolLbl.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.urlProtocolLbl.AutoSize = true;
-            this.urlProtocolLbl.Location = new System.Drawing.Point(312, 8);
-            this.urlProtocolLbl.Name = "urlProtocolLbl";
-            this.urlProtocolLbl.Size = new System.Drawing.Size(70, 13);
-            this.urlProtocolLbl.TabIndex = 3;
-            this.urlProtocolLbl.Text = "Url Protocols:";
-            // 
-            // extensionColumn
-            // 
-            this.extensionColumn.Text = "Extension";
-            this.extensionColumn.Width = 88;
-            // 
-            // descriptionColumn
-            // 
-            this.descriptionColumn.Text = "Description";
-            this.descriptionColumn.Width = 159;
-            // 
-            // fileTypeAddBtn
-            // 
-            this.fileTypeAddBtn.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.fileTypeAddBtn.Location = new System.Drawing.Point(234, 415);
-            this.fileTypeAddBtn.Name = "fileTypeAddBtn";
-            this.fileTypeAddBtn.Size = new System.Drawing.Size(75, 23);
-            this.fileTypeAddBtn.TabIndex = 4;
-            this.fileTypeAddBtn.Text = "Add";
-            this.fileTypeAddBtn.UseVisualStyleBackColor = true;
-            this.fileTypeAddBtn.Click += new System.EventHandler(this.fileTypeAddBtn_Click);
-            // 
-            // urlProtocolAddBtn
-            // 
-            this.urlProtocolAddBtn.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.urlProtocolAddBtn.Location = new System.Drawing.Point(474, 416);
-            this.urlProtocolAddBtn.Name = "urlProtocolAddBtn";
-            this.urlProtocolAddBtn.Size = new System.Drawing.Size(75, 23);
-            this.urlProtocolAddBtn.TabIndex = 5;
-            this.urlProtocolAddBtn.Text = "Add";
-            this.urlProtocolAddBtn.UseVisualStyleBackColor = true;
-            this.urlProtocolAddBtn.Click += new System.EventHandler(this.urlProtocolAddBtn_Click);
-            // 
-            // urlAssocTextBox
-            // 
-            this.urlAssocTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.urlAssocTextBox.Location = new System.Drawing.Point(315, 418);
-            this.urlAssocTextBox.Name = "urlAssocTextBox";
-            this.urlAssocTextBox.Size = new System.Drawing.Size(153, 20);
-            this.urlAssocTextBox.TabIndex = 6;
-            this.urlAssocTextBox.Text = "myprogram";
-            // 
-            // fileTypeExtBox
-            // 
-            this.fileTypeExtBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.fileTypeExtBox.Location = new System.Drawing.Point(79, 363);
-            this.fileTypeExtBox.Name = "fileTypeExtBox";
-            this.fileTypeExtBox.Size = new System.Drawing.Size(230, 20);
-            this.fileTypeExtBox.TabIndex = 7;
-            this.fileTypeExtBox.Text = ".myprogram";
-            // 
-            // fileTypeDescBox
-            // 
-            this.fileTypeDescBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.fileTypeDescBox.Location = new System.Drawing.Point(79, 389);
-            this.fileTypeDescBox.Name = "fileTypeDescBox";
-            this.fileTypeDescBox.Size = new System.Drawing.Size(230, 20);
-            this.fileTypeDescBox.TabIndex = 8;
-            this.fileTypeDescBox.Text = "My Program File";
-            // 
-            // fileTypeExtLbl
-            // 
-            this.fileTypeExtLbl.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.fileTypeExtLbl.AutoSize = true;
-            this.fileTypeExtLbl.Location = new System.Drawing.Point(8, 366);
-            this.fileTypeExtLbl.Name = "fileTypeExtLbl";
-            this.fileTypeExtLbl.Size = new System.Drawing.Size(53, 13);
-            this.fileTypeExtLbl.TabIndex = 9;
-            this.fileTypeExtLbl.Text = "Extension";
-            // 
-            // fileTypeDescExt
-            // 
-            this.fileTypeDescExt.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.fileTypeDescExt.AutoSize = true;
-            this.fileTypeDescExt.Location = new System.Drawing.Point(8, 392);
-            this.fileTypeDescExt.Name = "fileTypeDescExt";
-            this.fileTypeDescExt.Size = new System.Drawing.Size(60, 13);
-            this.fileTypeDescExt.TabIndex = 10;
-            this.fileTypeDescExt.Text = "Description";
-            // 
-            // fileTypeContextMenu
-            // 
-            this.fileTypeContextMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.removeToolStripMenuItem1});
-            this.fileTypeContextMenu.Name = "fileTypeContextMenu";
-            this.fileTypeContextMenu.Size = new System.Drawing.Size(118, 26);
-            // 
-            // removeToolStripMenuItem1
-            // 
-            this.removeToolStripMenuItem1.Name = "removeToolStripMenuItem1";
-            this.removeToolStripMenuItem1.Size = new System.Drawing.Size(117, 22);
-            this.removeToolStripMenuItem1.Text = "Remove";
-            this.removeToolStripMenuItem1.Click += new System.EventHandler(this.removeToolStripMenuItem1_Click);
-            // 
-            // urlProtocolContextMenu
-            // 
-            this.urlProtocolContextMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.removeToolStripMenuItem2});
-            this.urlProtocolContextMenu.Name = "urlProtocolContextMenu";
-            this.urlProtocolContextMenu.Size = new System.Drawing.Size(118, 26);
-            // 
-            // removeToolStripMenuItem2
-            // 
-            this.removeToolStripMenuItem2.Name = "removeToolStripMenuItem2";
-            this.removeToolStripMenuItem2.Size = new System.Drawing.Size(117, 22);
-            this.removeToolStripMenuItem2.Text = "Remove";
-            this.removeToolStripMenuItem2.Click += new System.EventHandler(this.removeToolStripMenuItem2_Click);
+            this.msBuildBox.Location = new System.Drawing.Point(113, 114);
+            this.msBuildBox.Name = "msBuildBox";
+            this.msBuildBox.Size = new System.Drawing.Size(410, 20);
+            this.msBuildBox.TabIndex = 20;
             // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(565, 474);
+            this.ClientSize = new System.Drawing.Size(565, 507);
             this.Controls.Add(this.mainTabs);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MinimumSize = new System.Drawing.Size(581, 513);
@@ -713,9 +735,9 @@
             this.gGroup.ResumeLayout(false);
             this.gGroup.PerformLayout();
             this.filesTab.ResumeLayout(false);
+            this.fFileListContextMenu.ResumeLayout(false);
             this.associationTab.ResumeLayout(false);
             this.associationTab.PerformLayout();
-            this.fFileListContextMenu.ResumeLayout(false);
             this.fileTypeContextMenu.ResumeLayout(false);
             this.urlProtocolContextMenu.ResumeLayout(false);
             this.ResumeLayout(false);
@@ -782,6 +804,8 @@
         private System.Windows.Forms.ToolStripMenuItem removeToolStripMenuItem1;
         private System.Windows.Forms.ContextMenuStrip urlProtocolContextMenu;
         private System.Windows.Forms.ToolStripMenuItem removeToolStripMenuItem2;
+        private System.Windows.Forms.TextBox msBuildBox;
+        private System.Windows.Forms.Label msBuildLabel;
     }
 }
 
